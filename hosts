@@ -1,0 +1,13 @@
+[app]
+vm2
+vm3
+
+[database]
+vm1
+
+[database:vars]
+version=16*
+data_directory=/opt/data
+
+[web]
+vm1

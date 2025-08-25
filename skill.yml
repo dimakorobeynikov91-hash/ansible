@@ -1,0 +1,41 @@
+- hosts: app
+  become: yes
+  tasks:
+  - name: Install docker
+    ansible.builtin.apt:
+      name: docker
+      state: present
+    when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+  - name: Install docker
+    ansible.builtin.yum:
+      name: docker
+      state: present
+    when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS' or ansible_distribution == 'Fedora'
+
+  - name: Включаем сервис докера
+    systemd:
+      name: docker
+      enabled: yes
+      state: started
+
+
+- hosts: database
+  become: yes
+  tasks:
+  - name: install postgres
+    ansible.builtin.apt:
+      name: postgresql={{ version }}
+      state: present
+
+  - name: edit postgresqk.conf
+    ansible.builtin.lineinfile:
+      path: /etc/postgresql/16/main/postgresql.conf
+      regexp: "data_directory ='/var/lib/postgresql/16/main'"
+      line: data_directory='{{ data_directory }}'
+
+  - name: Включаем сервис постгри
+    systemd:
+      name: postgresql
+      enabled: yes
+      state: started
